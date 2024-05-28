@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Touch Sound Synthesizer with Planets</title>
+    <title>Touch Sound Synthesizer with Code Snippets</title>
     <style>
         body {
             margin: 0;
@@ -11,72 +11,61 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: black; /* Change background color to black */
+            background-color: black; /* Background color set to black */
+            color: white; /* Set text color to white for better visibility */
             touch-action: none; /* Prevent default touch actions */
             overflow: hidden;
         }
-        .planet {
+        .code-snippet {
             position: absolute;
-            width: 50px;
-            height: 50px;
-            background-size: cover;
-            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+            color: black; /* Black text color */
+            padding: 5px;
+            border-radius: 5px;
+            font-family: monospace; /* Monospace font for code */
+            max-width: 80%;
+            word-wrap: break-word;
         }
     </style>
 </head>
 <body>
-    <canvas id="planetCanvas" style="display:none;"></canvas>
     <script>
         // Initialize AudioContext
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         let oscillator;
         let gainNode;
 
-        const planetColors = [
-            '#FFD700', // Sun
-            '#A9A9A9', // Mercury
-            '#FF7F50', // Venus
-            '#4682B4', // Earth
-            '#FF4500', // Mars
-            '#FFD700', // Jupiter
-            '#DAA520', // Saturn
-            '#00CED1', // Uranus
-            '#4169E1'  // Neptune
+        const codeSnippets = [
+            `const audioContext = new (window.AudioContext || window.webkitAudioContext)();`,
+            `oscillator = audioContext.createOscillator();`,
+            `gainNode = audioContext.createGain();`,
+            `oscillator.type = 'sine';`,
+            `oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);`,
+            `gainNode.gain.setValueAtTime(volume, audioContext.currentTime);`,
+            `oscillator.connect(gainNode);`,
+            `gainNode.connect(audioContext.destination);`,
+            `oscillator.start();`,
+            `oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);`,
+            `gainNode.gain.setValueAtTime(volume, audioContext.currentTime);`,
+            `oscillator.stop();`,
+            `oscillator.disconnect();`,
+            `gainNode.disconnect();`
         ];
 
-        // Function to create a planet image using canvas
-        function createPlanetImage(color) {
-            const canvas = document.getElementById('planetCanvas');
-            const ctx = canvas.getContext('2d');
-            const size = 50;
+        // Function to create and display a code snippet at the touch location
+        function createCodeSnippet(x, y) {
+            const snippet = codeSnippets[Math.floor(Math.random() * codeSnippets.length)];
+            const snippetElement = document.createElement('div');
+            snippetElement.className = 'code-snippet';
+            snippetElement.textContent = snippet;
+            snippetElement.style.left = `${x}px`;
+            snippetElement.style.top = `${y}px`;
+            document.body.appendChild(snippetElement);
 
-            canvas.width = size;
-            canvas.height = size;
-
-            ctx.clearRect(0, 0, size, size);
-            ctx.beginPath();
-            ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
-            ctx.fillStyle = color;
-            ctx.fill();
-
-            return canvas.toDataURL();
-        }
-
-        // Function to create and display a planet at the touch location
-        function createPlanet(x, y) {
-            const color = planetColors[Math.floor(Math.random() * planetColors.length)];
-            const planetImage = createPlanetImage(color);
-            const planetElement = document.createElement('div');
-            planetElement.className = 'planet';
-            planetElement.style.backgroundImage = `url(${planetImage})`;
-            planetElement.style.left = `${x - 25}px`; // Center the planet on touch
-            planetElement.style.top = `${y - 25}px`; // Center the planet on touch
-            document.body.appendChild(planetElement);
-
-            // Remove the planet after a while
+            // Remove the snippet after a while
             setTimeout(() => {
-                planetElement.remove();
-            }, 2000); // Planet stays for 2 seconds
+                snippetElement.remove();
+            }, 3000); // Snippet stays for 3 seconds
         }
 
         // Function to start playing the note
@@ -117,7 +106,7 @@
             const frequency = 100 + ((x / width) * 14900); // Map x to frequency (100Hz to 15000Hz)
             const volume = 1 - (y / height); // Map y to volume (0 to 1)
 
-            createPlanet(x, y);
+            createCodeSnippet(x, y);
             startSound(frequency, volume);
         });
 
@@ -140,4 +129,5 @@
     </script>
 </body>
 </html>
+
 
