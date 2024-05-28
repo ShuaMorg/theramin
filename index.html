@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Touch Sound Synthesizer</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f0f0f0;
+            touch-action: none; /* Prevent default touch actions */
+        }
+    </style>
+</head>
+<body>
+    <script>
+        // Initialize AudioContext
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        let oscillator;
+        let gainNode;
+
+        // Function to start playing the note
+        function startSound(frequency, volume) {
+            oscillator = audioContext.createOscillator();
+            gainNode = audioContext.createGain();
+
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime); // Set frequency
+            gainNode.gain.setValueAtTime(volume, audioContext.currentTime); // Set volume
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.start();
+        }
+
+        // Function to update the frequency and volume
+        function updateSound(frequency, volume) {
+            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+        }
+
+        // Function to stop playing the note
+        function stopSound() {
+            oscillator.stop();
+            oscillator.disconnect();
+            gainNode.disconnect();
+        }
+
+        document.addEventListener('touchstart', (event) => {
+            const touch = event.touches[0];
+            const x = touch.clientX;
+            const y = touch.clientY;
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+
+            const frequency = 100 + ((x / width) * 300); // Map x to frequency (100Hz to 400Hz)
+            const volume = 1 - (y / height); // Map y to volume (0 to 1)
+
+            startSound(frequency, volume);
+        });
+
+        document.addEventListener('touchmove', (event) => {
+            const touch = event.touches[0];
+            const x = touch.clientX;
+            const y = touch.clientY;
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+
+            const frequency = 100 + ((x / width) * 300); // Map x to frequency (100Hz to 400Hz)
+            const volume = 1 - (y / height); // Map y to volume (0 to 1)
+
+            updateSound(frequency, volume);
+        });
+
+        document.addEventListener('touchend', () => {
+            stopSound();
+        });
+    </script>
+</body>
+</html>
